@@ -1,0 +1,27 @@
+
+: ( class :Pair ) {
+  
+  : field :a double ;
+  : field :b double ;
+  
+  : method :getA {{
+    [ a ]
+  }} ;
+  
+  : method :getB {{
+    [ b ]
+  }} ;
+  
+  : method :getA :value {{
+    : assign a value ;
+  }} ;
+  
+  : method :getB :value {{
+    : assign b value ;
+  }} ;
+  
+  : method :isAPositive {{
+    : if [ a > #0 ] { [ #true ] } { [ #false ] } ;
+  }} ;
+  
+} ;

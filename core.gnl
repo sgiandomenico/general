@@ -1,0 +1,20 @@
+
+//: begin ;
+
+: assign boolean ( load "java.lang.Boolean" ) ;
+: assign byte ( load "java.lang.Byte" ) ;
+: assign int ( load "java.lang.Integer" ) ;
+: assign long ( load "java.lang.Long" ) ;
+: assign float ( load "java.lang.Float" ) ;
+: assign double ( load "java.lang.Double" ) ;
+: assign String ( load "java.lang.String" ) ;
+
+: assign Class ( load "java.lang.Class" ) ;
+
+//: load "org.giandomenico.stephen.flow.engine.Verb" :verb ;
+//: load "org.giandomenico.stephen.flow.engine.Block" :Block ;
+//: load "org.giandomenico.stephen.flow.engine.Symbol" :Symbol ;
+//: load "org.giandomenico.stephen.flow.engine.VariableScope" :VariableScope ;
+//: load "org.giandomenico.stephen.util.SequentialSet" :SequentialSet ;
+
+//: begin ;
