@@ -57,21 +57,22 @@ public class StatementCreator extends ParentheticalAdaptor
   @Override
   public Expression apply(Expression[] exps)
   {
-    if (exps[0].getName().equals("assign"))
+    if (exps[0].getName().equals("assign") || exps[0].getName().equals("set"))
     {
       if (exps.length != 3)
         throw new IllegalArgumentException("Wrong number of arguments: " + (exps.length - 1));
       
       SymbolicReference ref = (SymbolicReference) exps[1];
-      return new Assignment(ref.symbol, exps[2]);
+      return new Assignment(ref, exps[2]);
     }
     else if (exps[0].getName().equals("var"))
     {
-      if (exps.length != 2)
+      if (exps.length != 3)
         throw new IllegalArgumentException("Wrong number of arguments: " + (exps.length - 1));
       
       SymbolicReference ref = (SymbolicReference) exps[1];
-      return new Declaration(ref.symbol);
+      SymbolicReference type = (SymbolicReference) exps[2];
+      return new Declaration(ref.symbol, type);
     }
     else if (exps[0].getName().equals("get"))
     {

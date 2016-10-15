@@ -2,6 +2,8 @@ package general.ast;
 
 import org.giandomenico.stephen.util.ObjectUtil;
 
+import general.type.Type;
+
 public class Literal implements Expression
 {
   public final Object value;
@@ -12,9 +14,9 @@ public class Literal implements Expression
   }
   
   @Override
-  public Class<?> getType()
+  public Type getType()
   {
-    return value == null ? null : value.getClass();
+    return value == null ? null : Type.fromClass(value.getClass());
   }
   
   @Override

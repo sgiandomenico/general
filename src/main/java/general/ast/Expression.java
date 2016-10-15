@@ -3,6 +3,8 @@ package general.ast;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import general.type.Type;
+
 public interface Expression
 {
 //** Methods *******************************************************************
@@ -10,9 +12,11 @@ public interface Expression
   // Note: In order for clauses to resolve types, they need to resolve the type of functions.
   // Actually, more generally symbols need to be able to resolve their types.
   // Note that the type of an expression may not yet exist as an actual class.
-  public Class<?> getType();
+  @Deprecated
+  public Type getType();
   
   // FIXME!
+  @Deprecated
   public default String getName()
   {
     return "";

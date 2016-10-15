@@ -1,5 +1,6 @@
-package general.ast;
+package general.compiler;
 
+@Deprecated
 public class SymbolDescriptor
 {
   

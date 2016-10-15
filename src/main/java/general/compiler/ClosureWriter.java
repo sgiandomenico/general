@@ -5,6 +5,7 @@ import static org.objectweb.asm.Opcodes.*;
 import java.util.Arrays;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.Type;
 
 import general.ast.*;
 import general.engine.*;

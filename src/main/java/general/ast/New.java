@@ -1,5 +1,7 @@
 package general.ast;
 
+import general.type.Type;
+
 //@Deprecated
 public class New implements Expression
 {
@@ -13,9 +15,9 @@ public class New implements Expression
   }
   
   @Override
-  public Class<?> getType()
+  public Type getType()
   {
-    return type;
+    return Type.fromClass(type);
   }
   
   @Override

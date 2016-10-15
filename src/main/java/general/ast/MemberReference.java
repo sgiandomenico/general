@@ -2,6 +2,8 @@ package general.ast;
 
 import org.giandomenico.stephen.util.NotYetImplementedException;
 
+import general.type.Type;
+
 public class MemberReference implements Expression
 {
   public final Expression target, member;
@@ -13,7 +15,7 @@ public class MemberReference implements Expression
   }
   
   @Override
-  public Class<?> getType()
+  public Type getType()
   {
     throw new NotYetImplementedException();
   }

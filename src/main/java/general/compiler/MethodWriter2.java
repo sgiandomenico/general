@@ -6,11 +6,12 @@ import java.util.*;
 
 import org.giandomenico.stephen.util.NotYetImplementedException;
 import org.objectweb.asm.*;
+import org.objectweb.asm.Type;
 
 import general.ast.*;
 import general.engine.*;
 
-public abstract class MethodWriter
+public class MethodWriter2
 {
 //** Fields ********************************************************************
 
@@ -47,27 +48,27 @@ public abstract class MethodWriter
 //  }
 
 //------------------------------------------------------------------------------
-  
-  protected final static Type FUNCTION_TYPE = Type.getType(Function.class);
-  protected final static MethodReference FUNCTION_APPLY = MethodReference.get(Function.class, "apply", Object[].class);
-  
+
+//  protected final static Type FUNCTION_TYPE = Type.getType(Function.class);
+//  protected final static MethodReference FUNCTION_APPLY = MethodReference.get(Function.class, "apply", Object[].class);
+
 //  protected final static Map<Class<?>, Integer> p
 
 //------------------------------------------------------------------------------
   
   protected final MethodVisitor mv;
 //  protected final String className;
-  protected final List<Symbol> parameters;
-  
+//  protected final List<Symbol> parameters;
+
 //** Constructors **************************************************************
   
-  public MethodWriter(MethodVisitor mv, List<Symbol> parameters)
+  public MethodWriter2(MethodVisitor mv)
   {
 //    super(ASM5, mv);
     
     this.mv = mv;
 //    this.className = className;
-    this.parameters = parameters;
+//    this.parameters = parameters;
   }
   
 //** Methods *******************************************************************
@@ -141,12 +142,30 @@ public abstract class MethodWriter
   
   void writeClause(Clause sexp)
   {
-    writeExpression(sexp.verb);
-    writeTypeInsn(CHECKCAST, FUNCTION_TYPE); // Necessary?
+//    writeExpression(sexp.verb);
+//    writeTypeInsn(CHECKCAST, FUNCTION_TYPE); // Necessary?
+//    
+//    writeArray(Object.class, sexp.args);
+//    
+//    FUNCTION_APPLY.visitInsn(mv);
     
-    writeArray(Object.class, sexp.args);
+    if (!(sexp.verb instanceof SymbolicReference))
+      throw new NotYetImplementedException();
     
-    FUNCTION_APPLY.visitInsn(mv);
+    SymbolicReference symbol = (SymbolicReference) sexp.verb;
+    NameReference ref = symbol.reference;
+    if (!(ref instanceof general.ast.MethodReference))
+      throw new NotYetImplementedException();
+    
+    general.ast.MethodReference methodRef = (general.ast.MethodReference) ref;
+    
+    for (Expression e : sexp.args)
+      writeExpression(e);
+    
+    mv.visitMethodInsn(methodRef.isStatic ? INVOKESTATIC : INVOKEVIRTUAL,
+        methodRef.definingClass.getClassFileName(),
+        methodRef.getID(),
+        methodRef.type.getDescriptor(), false);
   }
   
   void writeLiteral(Literal c)
@@ -156,20 +175,79 @@ public abstract class MethodWriter
   
   void writeSymbolicReference(SymbolicReference var)
   {
-    int parameterIndex = parameters.indexOf(var.symbol);
-    if (parameterIndex < 0)
-      writeLocalVariable(var);
+    NameReference ref = var.reference;
+    
+    if (ref instanceof LocalReference)
+    {
+      LocalReference localRef = (LocalReference) ref;
+      mv.visitVarInsn(ALOAD, localRef.getIndex());
+    }
+    else if (ref instanceof FieldReference)
+    {
+      FieldReference fieldRef = (FieldReference) ref;
+      // FIXME
+      mv.visitFieldInsn(fieldRef.isStatic ? GETSTATIC : GETFIELD, fieldRef.getDefiningClass().getClassFileName(),
+          fieldRef.getID(), fieldRef.getType().getDescriptor());
+    }
+    else if (ref instanceof ClassReference)
+    {
+      // TODO: Verify.
+      ClassReference classRef = (ClassReference) ref;
+      mv.visitLdcInsn(Type.getType(classRef.getType().getDescriptor()));
+    }
     else
-      writeParameter(parameterIndex + 1);
+    {
+      throw new NotYetImplementedException();
+    }
+    
+//    int parameterIndex = parameters.indexOf(var.symbol);
+//    if (parameterIndex < 0)
+//      writeLocalVariable(var);
+//    else
+//      writeParameter(parameterIndex + 1);
   }
   
-  abstract void writeLocalVariable(SymbolicReference var);
+//  void writeLocalVariable(SymbolicReference var)
+//  {
+//    // FIXME
+//  }
+//  
+//  void writeParameter(int index)
+//  {
+//    // FIXME
+//  }
   
-  abstract void writeParameter(int index);
+  void writeAssignment(Assignment assign)
+  {
+    writeExpression(assign.value);
+    
+    NameReference ref = assign.symRef.reference;
+    
+    if (ref instanceof LocalReference)
+    {
+      LocalReference localRef = (LocalReference) ref;
+      mv.visitVarInsn(ASTORE, localRef.getIndex());
+    }
+    else if (ref instanceof FieldReference)
+    {
+      FieldReference fieldRef = (FieldReference) ref;
+      // FIXME
+      mv.visitFieldInsn(fieldRef.isStatic ? PUTSTATIC : PUTFIELD, fieldRef.getDefiningClass().getClassFileName(),
+          fieldRef.getID(), fieldRef.getType().getDescriptor());
+    }
+    else
+    {
+      throw new NotYetImplementedException();
+    }
+    
+    // FIXME: To maintain expression property.
+    writeSymbolicReference(assign.symRef);
+  }
   
-  abstract void writeAssignment(Assignment assign);
-  
-  abstract void writeDeclaration(Declaration decl);
+  void writeDeclaration(Declaration decl)
+  {
+    throw new UnsupportedOperationException();
+  }
   
   void writeNew(New newObj)
   {
@@ -187,11 +265,13 @@ public abstract class MethodWriter
   
 //------------------------------------------------------------------------------
   
+  @Deprecated
   void writeTypeInsn(int opcode, Type type)
   {
     mv.visitTypeInsn(opcode, type.getInternalName());
   }
   
+  @Deprecated
   void writeTypeInsn(int opcode, Class<?> clazz)
   {
     writeTypeInsn(opcode, Type.getType(clazz));
@@ -285,6 +365,7 @@ public abstract class MethodWriter
     }
   }
   
+  @Deprecated
   void writeArrayNew(Class<?> elementType)
   {
     if (!elementType.isPrimitive())
@@ -303,6 +384,7 @@ public abstract class MethodWriter
     }
   }
   
+  @Deprecated
   void writeArray(Class<?> elementType, Expression... exps)
   {
     // Create array.

@@ -1,5 +1,7 @@
 package general.ast;
 
+import general.type.Type;
+
 public class ExpressionLiteral implements Expression
 {
   public final Expression expr;
@@ -12,9 +14,9 @@ public class ExpressionLiteral implements Expression
 //** Methods *******************************************************************
   
   @Override
-  public Class<?> getType()
+  public Type getType()
   {
-    return Expression.class;
+    return Type.fromClass(Expression.class);
   }
   
 //------------------------------------------------------------------------------

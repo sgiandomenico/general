@@ -1,10 +1,16 @@
 package general.ast;
 
-import general.engine.Symbol;
+import org.giandomenico.stephen.util.NotYetImplementedException;
 
+import general.engine.Symbol;
+import general.type.Type;
+
+// TODO: Rename to identifier?
 public class SymbolicReference implements Expression
 {
   public final Symbol symbol;
+  
+  public NameReference reference;
   
   public SymbolicReference(Symbol symbol)
   {
@@ -17,10 +23,10 @@ public class SymbolicReference implements Expression
   }
   
   @Override
-  public Class<?> getType()
+  public Type getType()
   {
     // TODO Auto-generated method stub
-    return null;
+    throw new NotYetImplementedException();
   }
   
   // FIXME?

@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.giandomenico.stephen.util.NotYetImplementedException;
 
+import general.type.Type;
+
 public class Clause implements Expression
 {
 //** Fields ********************************************************************
@@ -30,7 +32,7 @@ public class Clause implements Expression
 //** Methods *******************************************************************
   
   @Override
-  public Class<?> getType()
+  public Type getType()
   {
     throw new NotYetImplementedException();
 //    return verb.getType();

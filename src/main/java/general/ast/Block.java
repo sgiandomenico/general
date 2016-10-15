@@ -1,5 +1,7 @@
 package general.ast;
 
+import general.type.Type;
+
 public class Block implements Expression
 {
   public final Expression[] body;
@@ -10,7 +12,7 @@ public class Block implements Expression
   }
   
   @Override
-  public Class<?> getType()
+  public Type getType()
   {
     return body[body.length - 1].getType();
   }
