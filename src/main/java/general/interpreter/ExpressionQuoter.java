@@ -93,7 +93,7 @@ public class ExpressionQuoter
   
   public Expression quote(Assignment assign)
   {
-    return new Clause(NEW, new Literal(Assignment.class), new Literal(assign.symbol), quote(assign.value));
+    return new Clause(NEW, new Literal(Assignment.class), quote(assign.location), quote(assign.value));
   }
   
   public Expression quote(Declaration decl)

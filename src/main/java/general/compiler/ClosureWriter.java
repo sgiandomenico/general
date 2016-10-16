@@ -4,6 +4,7 @@ import static org.objectweb.asm.Opcodes.*;
 
 import java.util.Arrays;
 
+import org.giandomenico.stephen.util.NotYetImplementedException;
 import org.objectweb.asm.*;
 import org.objectweb.asm.Type;
 
@@ -180,14 +181,19 @@ public class ClosureWriter
     @Override
     void writeAssignment(Assignment assign)
     {
+      if (!(assign.location instanceof SymbolicReference))
+        throw new NotYetImplementedException();
+      
+      SymbolicReference symRef = (SymbolicReference) assign.location;
+      
       writeGetScope();
-      mv.visitLdcInsn(assign.symbol.name);
+      mv.visitLdcInsn(symRef.symbol.name);
       writeExpression(assign.value);
       VAR_ASSIGN.visitInsn(mv);
       
       // TODO: Clean up.
       // Copy value, to be left on stack.
-      writeLocalVariable(new SymbolicReference(assign.symbol));
+      writeLocalVariable(symRef);
     }
     
     @Override

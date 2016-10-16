@@ -1,19 +1,15 @@
 package general.ast;
 
-import general.engine.Symbol;
 import general.type.Type;
 
 public class Assignment implements Expression
 {
-  @Deprecated
-  public final Symbol symbol;
-  public final SymbolicReference symRef;
+  public final Expression location;
   public final Expression value;
   
-  public Assignment(SymbolicReference symRef, Expression value)
+  public Assignment(Expression location, Expression value)
   {
-    this.symRef = symRef;
-    this.symbol = symRef.symbol;
+    this.location = location;
     this.value = value;
   }
   
@@ -31,7 +27,7 @@ public class Assignment implements Expression
   @Override
   public String toString()
   {
-    return symRef + " = " + value;
+    return location + " = " + value;
   }
   
 }

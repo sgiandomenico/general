@@ -3,6 +3,8 @@ package general.interpreter;
 import java.lang.reflect.*;
 import java.util.Arrays;
 
+import org.giandomenico.stephen.util.NotYetImplementedException;
+
 import general.ast.*;
 import general.engine.*;
 
@@ -182,11 +184,16 @@ public class Executor implements Function
     
     public Object evaluate(Assignment assign)
     {
+      if (!(assign.location instanceof SymbolicReference))
+        throw new NotYetImplementedException();
+      
+      SymbolicReference symRef = (SymbolicReference) assign.location;
+      
       // FIXME: Remove.
-      scope.declare(assign.symbol.name);
+      scope.declare(symRef.symbol.name);
       
       Object value = evaluate(assign.value);
-      scope.assign(assign.symbol.name, value);
+      scope.assign(symRef.symbol.name, value);
       return value;
     }
     

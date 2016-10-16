@@ -16,6 +16,8 @@ public class TestCompiler
   
   public static void main(String[] args)
   {
+    SymbolTable symTable = new SymbolTable(null);
+    
     ClassMeta classMeta = new ClassMeta("general.SampleClass");
     
     FieldMeta someField = new FieldMeta();
@@ -33,24 +35,27 @@ public class TestCompiler
         Type.fromClass(Integer.class), Type.fromClass(Integer.class));
     toString.isStatic = true;
     toString.definingClass = Type.fromClass(TestCompiler.class);
+    symTable.add(toString);
     
     SymbolicReference toStringSym = new SymbolicReference(toString.getID());
-    toStringSym.reference = toString;
+//    toStringSym.reference = toString;
     
     LocalReference param0 = new LocalReference("x");
     param0.index = 0;
     param0.type = Type.fromClass(String.class);
+    symTable.add(param0);
     
     SymbolicReference paramSym = new SymbolicReference(param0.getID());
-    paramSym.reference = param0;
+//    paramSym.reference = param0;
     
     FieldReference field = new FieldReference(someField.name);
     field.type = someField.type;
     field.definingClass = new ClassType(classMeta.binaryName);
     field.isStatic = someField.isStatic;
+    symTable.add(field);
     
     SymbolicReference fieldSym = new SymbolicReference(someField.name);
-    fieldSym.reference = field;
+//    fieldSym.reference = field;
     
     doSomething.body = new Block(
         new Assignment(fieldSym, new Literal(16)),
@@ -58,6 +63,8 @@ public class TestCompiler
     
     classMeta.addField(someField);
     classMeta.addMethod(doSomething);
+
+    new SymbolResolver(symTable).resolveExpression(doSomething.body);
     
     System.out.println(doSomething.body);
     

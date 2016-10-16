@@ -219,9 +219,14 @@ public class MethodWriter2
   
   void writeAssignment(Assignment assign)
   {
+    if (!(assign.location instanceof SymbolicReference))
+      throw new NotYetImplementedException();
+    
+    SymbolicReference symRef = (SymbolicReference) assign.location;
+    
     writeExpression(assign.value);
     
-    NameReference ref = assign.symRef.reference;
+    NameReference ref = symRef.reference;
     
     if (ref instanceof LocalReference)
     {
@@ -241,7 +246,7 @@ public class MethodWriter2
     }
     
     // FIXME: To maintain expression property.
-    writeSymbolicReference(assign.symRef);
+    writeSymbolicReference(symRef);
   }
   
   void writeDeclaration(Declaration decl)

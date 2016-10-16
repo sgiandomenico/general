@@ -16,13 +16,13 @@ public class SymbolTable implements NameServer
 
 //** Fields ********************************************************************
   
-  final SymbolTable parent;
+  final NameServer parent;
   
-  final Map<String, NameReference> table = new HashMap<>();
+  final Map<String, NameReference> table = new LinkedHashMap<>();
   
 //** Constructors **************************************************************
   
-  public SymbolTable(SymbolTable parent)
+  public SymbolTable(NameServer parent)
   {
     this.parent = parent;
   }
@@ -41,6 +41,7 @@ public class SymbolTable implements NameServer
   
 //------------------------------------------------------------------------------
   
+  @Override
   public boolean add(String name, NameReference ref)
   {
     return table.putIfAbsent(name, ref) == null;
