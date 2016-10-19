@@ -14,52 +14,9 @@ import general.engine.*;
 public class MethodWriter2
 {
 //** Fields ********************************************************************
-
-//  @SuppressWarnings("hiding")
-//  public static enum ArrayOps
-//  {
-//    BOOLEAN(T_BOOLEAN, BASTORE, BALOAD),
-//    BYTE(T_BYTE, BASTORE, BALOAD),
-//    CHAR(T_CHAR, CASTORE, CALOAD),
-//    SHORT(T_SHORT, SASTORE, SALOAD),
-//    INT(T_INT, IASTORE, IALOAD),
-//    LONG(T_LONG, LASTORE, LALOAD),
-//    FLOAT(T_FLOAT, FASTORE, FALOAD),
-//    DOUBLE(T_DOUBLE, DASTORE, DALOAD),
-//    OBJECT(-1, AASTORE, AALOAD);
-//    
-//    public final int typeId;
-//    public final int storeOp, loadOp;
-//    
-//    private ArrayOps(int typeId, int storeOp, int loadOp)
-//    {
-//      this.typeId = typeId;
-//      this.storeOp = storeOp;
-//      this.loadOp = loadOp;
-//    }
-//    
-//    public static ArrayOps forType(Class<?> elementType)
-//    {
-//      if (Boolean.TYPE.equals(elementType))
-//        return BOOLEAN;
-//      else
-//        return OBJECT;
-//    }
-//  }
-
-//------------------------------------------------------------------------------
-
-//  protected final static Type FUNCTION_TYPE = Type.getType(Function.class);
-//  protected final static MethodReference FUNCTION_APPLY = MethodReference.get(Function.class, "apply", Object[].class);
-
-//  protected final static Map<Class<?>, Integer> p
-
-//------------------------------------------------------------------------------
   
   protected final MethodVisitor mv;
-//  protected final String className;
-//  protected final List<Symbol> parameters;
-
+  
 //** Constructors **************************************************************
   
   public MethodWriter2(MethodVisitor mv)
@@ -107,10 +64,6 @@ public class MethodWriter2
     {
       writeSymbolicReference((SymbolicReference) exp);
     }
-//    else if (exp instanceof Parameter)
-//    {
-//      writeParameter((Parameter) exp);
-//    }
     else if (exp instanceof Assignment)
     {
       writeAssignment((Assignment) exp);
@@ -118,6 +71,10 @@ public class MethodWriter2
     else if (exp instanceof Declaration)
     {
       writeDeclaration((Declaration) exp);
+    }
+    else if (exp instanceof MemberReference)
+    {
+      writeMember((MemberReference) exp);
     }
     else if (exp instanceof New)
     {
@@ -142,22 +99,32 @@ public class MethodWriter2
   
   void writeClause(Clause sexp)
   {
-//    writeExpression(sexp.verb);
-//    writeTypeInsn(CHECKCAST, FUNCTION_TYPE); // Necessary?
-//    
-//    writeArray(Object.class, sexp.args);
-//    
-//    FUNCTION_APPLY.visitInsn(mv);
+    boolean wroteSubject = false;
     
-    if (!(sexp.verb instanceof SymbolicReference))
+    Expression verbExpr = sexp.verb;
+    // TODO: Handle non-static member references?
+    if (verbExpr instanceof MemberReference)
+    {
+      MemberReference memberRef = ((MemberReference) sexp.verb);
+      
+      // TODO: Remove unnecessary writes for directly-accessed static methods.
+      writeExpression(memberRef.subject);
+      verbExpr = memberRef.member;
+      wroteSubject = true;
+    }
+    
+    if (!(verbExpr instanceof SymbolicReference))
       throw new NotYetImplementedException();
     
-    SymbolicReference symbol = (SymbolicReference) sexp.verb;
-    NameReference ref = symbol.reference;
-    if (!(ref instanceof general.ast.MethodReference))
+    SymbolicReference verbSymbol = (SymbolicReference) verbExpr;
+    NameReference verbRef = verbSymbol.reference;
+    if (!(verbRef instanceof general.ast.MethodReference))
       throw new NotYetImplementedException();
     
-    general.ast.MethodReference methodRef = (general.ast.MethodReference) ref;
+    general.ast.MethodReference methodRef = (general.ast.MethodReference) verbRef;
+    
+    if (wroteSubject && methodRef.isStatic)
+      mv.visitInsn(POP);
     
     for (Expression e : sexp.args)
       writeExpression(e);
@@ -207,16 +174,6 @@ public class MethodWriter2
 //      writeParameter(parameterIndex + 1);
   }
   
-//  void writeLocalVariable(SymbolicReference var)
-//  {
-//    // FIXME
-//  }
-//  
-//  void writeParameter(int index)
-//  {
-//    // FIXME
-//  }
-  
   void writeAssignment(Assignment assign)
   {
     if (!(assign.location instanceof SymbolicReference))
@@ -252,6 +209,11 @@ public class MethodWriter2
   void writeDeclaration(Declaration decl)
   {
     throw new UnsupportedOperationException();
+  }
+  
+  void writeMember(MemberReference member)
+  {
+    throw new NotYetImplementedException();
   }
   
   void writeNew(New newObj)
@@ -419,10 +381,5 @@ public class MethodWriter2
     writeMethodCall(MethodReference.get(clazz, methodName, parameters));
   }
   
-//  void writeMethodCall(MethodReference method, Expression... args)
-//  {
-//    
-//  }
-
 //------------------------------------------------------------------------------
 }

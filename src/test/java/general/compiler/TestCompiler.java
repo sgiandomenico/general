@@ -30,19 +30,20 @@ public class TestCompiler
     doSomething.type = new FunctionType(Type.fromClass(String.class), Type.fromClass(Integer.class));
     doSomething.isStatic = true;
     
-    MethodReference toString = new MethodReference("toString");
-    toString.type = new FunctionType(Type.fromClass(String.class),
-        Type.fromClass(Integer.class), Type.fromClass(Integer.class));
-    toString.isStatic = true;
-    toString.definingClass = Type.fromClass(TestCompiler.class);
-    symTable.add(toString);
-    
-    SymbolicReference toStringSym = new SymbolicReference(toString.getID());
+//    MethodReference toString = new MethodReference("toString");
+//    toString.type = new FunctionType(Type.fromClass(String.class),
+//        Type.fromClass(Integer.class), Type.fromClass(Integer.class));
+//    toString.isStatic = true;
+//    toString.definingClass = Type.fromClass(TestCompiler.class);
+//    symTable.add(toString);
+
+//    SymbolicReference toStringSym = new SymbolicReference(toString.getID());
+    SymbolicReference toStringSym = new SymbolicReference("toString");
 //    toStringSym.reference = toString;
     
     LocalReference param0 = new LocalReference("x");
     param0.index = 0;
-    param0.type = Type.fromClass(String.class);
+    param0.type = Type.fromClass(Integer.class);
     symTable.add(param0);
     
     SymbolicReference paramSym = new SymbolicReference(param0.getID());
@@ -56,15 +57,25 @@ public class TestCompiler
     
     SymbolicReference fieldSym = new SymbolicReference(someField.name);
 //    fieldSym.reference = field;
+
+//    doSomething.body = new Block(
+//        new Assignment(fieldSym, new Literal(16)),
+//        new Clause(toStringSym, paramSym, fieldSym));
+    
+    ClassReference testCompilerClass = new ClassReference(Type.fromClass(TestCompiler.class));
+    symTable.add(testCompilerClass);
+    
+    SymbolicReference tcClassRef = new SymbolicReference(testCompilerClass.getID());
+//    tcClassRef.reference = testCompilerClass;
     
     doSomething.body = new Block(
         new Assignment(fieldSym, new Literal(16)),
-        new Clause(toStringSym, paramSym, fieldSym));
+        new Clause(new MemberReference(tcClassRef, toStringSym), paramSym, fieldSym));
     
     classMeta.addField(someField);
     classMeta.addMethod(doSomething);
-
-    new SymbolResolver(symTable).resolveExpression(doSomething.body);
+    
+    new SymbolResolver(symTable).resolveExpression(doSomething.body, Type.ANY);
     
     System.out.println(doSomething.body);
     

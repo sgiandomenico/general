@@ -1,11 +1,12 @@
 package general.type;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 public class FunctionType implements Type
 {
-  final Type[] argumentTypes;
-  final Type returnType;
+  public final Type[] argumentTypes;
+  public final Type returnType;
   
   @Deprecated
   public FunctionType(Type[] argumentTypes, Type returnType)
@@ -18,6 +19,16 @@ public class FunctionType implements Type
   {
     this.argumentTypes = Arrays.copyOf(argumentTypes, argumentTypes.length);
     this.returnType = returnType;
+  }
+  
+  public FunctionType(Method method)
+  {
+    Class<?>[] paramTypes = method.getParameterTypes();
+    this.argumentTypes = new Type[paramTypes.length];
+    for (int i = 0; i < argumentTypes.length; i++)
+      this.argumentTypes[i] = Type.fromClass(paramTypes[i]);
+    
+    this.returnType = Type.fromClass(method.getReturnType());
   }
   
   @Override

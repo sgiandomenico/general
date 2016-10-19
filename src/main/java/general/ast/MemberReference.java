@@ -6,11 +6,11 @@ import general.type.Type;
 
 public class MemberReference implements Expression
 {
-  public final Expression target, member;
+  public final Expression subject, member;
   
-  public MemberReference(Expression target, Expression member)
+  public MemberReference(Expression subject, Expression member)
   {
-    this.target = target;
+    this.subject = subject;
     this.member = member;
   }
   
